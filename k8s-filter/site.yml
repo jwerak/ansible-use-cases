@@ -1,0 +1,18 @@
+---
+- name: Test filter pods from local filter
+  hosts: localhost
+  gather_facts: false
+  vars:
+    data_file: ./data/single-pod.yml
+  tasks:
+    - name: Load json from filter
+      ansible.builtin.set_fact:
+        __retrieved_pods: "{{ lookup('file', data_file) | from_yaml }}"
+
+    - name: Test Custom var
+      ansible.builtin.set_fact:
+        output_pods: "{{ lookup('template', 'k8s-pods.j2') }}"
+
+    - name: Print pods
+      ansible.builtin.debug:
+        var: output_pods
