@@ -11,8 +11,8 @@
 
     - name: Filter out pods with GPU
       ansible.builtin.set_fact:
-        output_pods: "{{ lookup('template', 'filter-gpu-pods.j2') }}"
+        filtered_pods: "{{ lookup('template', 'filter-gpu-pods.j2') }}"
 
     - name: Print pods
       ansible.builtin.debug:
-        var: output_pods
+        var: filtered_pods

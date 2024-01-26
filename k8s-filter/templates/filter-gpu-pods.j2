@@ -1,13 +1,16 @@
-{% set filtered_pods = [] %}
-{%- for pod in __retrieved_pods -%}
+{%- set filtered_pods = [] -%}
+{%- for pod in __retrieved_pods["items"] -%}
+    {%- set ns = namespace(local_gpu_containers = []) -%}
     {#- For each container with 'resources.limits' defined -#}
-    {% set ns = namespace(gpu_found = false) %}
-    {%- for container in pod.spec.containers | selectattr("resources", 'defined') | selectattr("resources.limits", 'defined') if not ns.gpu_found -%}
+    {%- for container in pod.spec.containers | selectattr("resources", 'defined') | selectattr("resources.limits", 'defined') -%}
         {#- Print pod name if any container has GPU and exit containers loop -#}
         {%- if container.resources.limits | dict2items | selectattr('key', 'search', '^nvidia.*') | length > 0 %}
-            {% set ns.gpu_found = true %}
-            {{- filtered_pods.append({'name': pod.metadata.name, 'namespace': pod.metadata.namespace}) }}
-        {%- endif %}
+            {{- ns.local_gpu_containers.append({'name': container.name, 'resources': container.resources}) -}}
+        {%- endif -%}
     {%- endfor -%}
+    {#- If container with GPU was found -#}
+    {%- if ns.local_gpu_containers | length > 0 -%}
+        {{- filtered_pods.append({'name': pod.metadata.name, 'namespace': pod.metadata.namespace, 'containers': ns.local_gpu_containers }) -}}
+    {%- endif -%}
 {%- endfor -%}
 {{ filtered_pods }}
