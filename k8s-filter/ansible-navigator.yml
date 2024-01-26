@@ -1,0 +1,14 @@
+ansible-navigator:
+  app: welcome
+  collection-doc-cache-path: ~/.cache/ansible-navigator/collection_doc_cache.db
+  enable-prompts: false
+  format: yaml
+  mode: stdout
+  time-zone: UTC
+  playbook-artifact:
+    enable: true
+    save-as: /tmp/{playbook_name}-artifact-{time_stamp}.json
+  logging:
+    append: true
+    file: /tmp/k8s-filter-ansible-navigator.log
+    level: warning
