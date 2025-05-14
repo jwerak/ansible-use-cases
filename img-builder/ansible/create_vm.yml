@@ -38,6 +38,8 @@
                   #cloud-config
                   users:
                     - name: ansible
+                      password: redhat
+                      type: text
                       groups:
                         - wheel
                       ssh_authorized_keys:
