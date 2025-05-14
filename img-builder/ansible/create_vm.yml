@@ -9,42 +9,140 @@
           metadata:
             name: workloads
 
-    - name: Create fedora virtual machine
+    # - name: Create fedora virtual machine
+    #   redhat.openshift_virtualization.kubevirt_vm:
+    #     state: present
+    #     name: fedora-httpd
+    #     namespace: workloads
+    #     labels:
+    #       app: httpd
+    #     instancetype:
+    #       name: u1.medium
+    #     preference:
+    #       name: fedora
+    #     spec:
+    #       domain:
+    #         devices:
+    #           interfaces:
+    #             - name: default
+    #               masquerade: {}
+    #       networks:
+    #         - name: default
+    #           pod: {}
+    #       volumes:
+    #         - containerDisk:
+    #             image: quay.io/containerdisks/fedora:latest
+    #           name: containerdisk
+    #         - cloudInitNoCloud:
+    #             userData: |-
+    #               #cloud-config
+    #               user: ansible
+    #               password: redhat
+    #               ssh_pwauth: True
+    #               chpasswd:
+    #                 expire: False
+    #               sudo: "ALL=(ALL) NOPASSWD:ALL"
+    #               ssh_authorized_keys:
+    #                 - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7Pn+KoNWm0c8FBJLKT3p+esl1me4XXauehdJWirJ7iq2QoCT+ZzM98i+13CHVWujno4RDmVJ72Mt2e7bVC6T+CVuVioRoQ3OVEROw4eftvbo+kzAR29rEYig2bpyTtNzsVUdL7y1V2F4ASE5ClbtUTtRhKVjqe4vN4JKnV88rydVvkIQRnk4vBSlEcQS9toir1clHrCH29EA02GZZ7pf9vu4BCnCP+kx7dzd3EwSBPsbsC4p95YFDoDVJ65QA3AbtdAdBI9ApGpZnpiVubUQ9TjCQF453H0Ty0OAMIxcmTBBzKEt1SiUktYKbxqRDep/gonyhIbnN4O5FEvzv6avlBSoNHR1CKJBDjAALRPYZOyTjwYvW/pq68yazbiZychVZJESh6D3Om2UwKTeb1EcbHddEwVDOytz/yPaNmrSYCg9zgRA0SItXMHKYUNqN3LWn4coUVSSerm1Pw0llMwmKTgVkDNiEpmWtBBou1YUZ1VieTEiJIEs2hknbfbPt/k8= demos
+    #           name: cloudinit
+
+    - name: Define and create the VirtualMachine
       redhat.openshift_virtualization.kubevirt_vm:
         state: present
-        name: fedora-httpd
+        name: rhel-image-builder
         namespace: workloads
+
+        # Corresponds to top-level VM metadata.labels
         labels:
-          app: httpd
-        instancetype:
-          name: u1.medium
-        preference:
-          name: fedora
-        spec:
-          domain:
-            devices:
-              interfaces:
-                - name: default
-                  masquerade: {}
-          networks:
-            - name: default
-              pod: {}
-          volumes:
-            - containerDisk:
-                image: quay.io/containerdisks/fedora:latest
-              name: containerdisk
-            - cloudInitNoCloud:
-                userData: |-
-                  #cloud-config
-                  user: ansible
-                  password: redhat
-                  ssh_pwauth: True
-                  chpasswd:
-                    expire: False
-                  sudo: "ALL=(ALL) NOPASSWD:ALL"
-                  ssh_authorized_keys:
-                    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7Pn+KoNWm0c8FBJLKT3p+esl1me4XXauehdJWirJ7iq2QoCT+ZzM98i+13CHVWujno4RDmVJ72Mt2e7bVC6T+CVuVioRoQ3OVEROw4eftvbo+kzAR29rEYig2bpyTtNzsVUdL7y1V2F4ASE5ClbtUTtRhKVjqe4vN4JKnV88rydVvkIQRnk4vBSlEcQS9toir1clHrCH29EA02GZZ7pf9vu4BCnCP+kx7dzd3EwSBPsbsC4p95YFDoDVJ65QA3AbtdAdBI9ApGpZnpiVubUQ9TjCQF453H0Ty0OAMIxcmTBBzKEt1SiUktYKbxqRDep/gonyhIbnN4O5FEvzv6avlBSoNHR1CKJBDjAALRPYZOyTjwYvW/pq68yazbiZychVZJESh6D3Om2UwKTeb1EcbHddEwVDOytz/yPaNmrSYCg9zgRA0SItXMHKYUNqN3LWn4coUVSSerm1Pw0llMwmKTgVkDNiEpmWtBBou1YUZ1VieTEiJIEs2hknbfbPt/k8= demos
-              name: cloudinit
+          app: rhel-image-builder
+          kubevirt.io/dynamic-credentials-support: "true" # Ensures guest agent communication if agent is in the image
+          vm.kubevirt.io/template: rhel9-server-small
+          vm.kubevirt.io/template.namespace: openshift
+          vm.kubevirt.io/template.revision: "1"
+          vm.kubevirt.io/template.version: v0.32.2
+
+        # Corresponds to spec.runStrategy
+        run_strategy: RerunOnFailure
+
+        # Corresponds to spec.dataVolumeTemplates
+        # Defines the DataVolume that will be created and used by the VM.
+        data_volume_templates:
+          - metadata: # Metadata for the DataVolume object
+              name: rhel-image-builder # Name of the DataVolume to be created
+            spec:
+              sourceRef:
+                kind: DataSource
+                name: rhel9 # Name of the DataSource (e.g., OS image)
+                namespace: openshift-virtualization-os-images # Namespace of the DataSource
+              storage:
+                resources:
+                  requests:
+                    storage: 30Gi # Size of the DataVolume
+                # If you need to specify a storageClassName for the DataVolume, uncomment and set it:
+                # storageClassName: your-storage-class-name
+
+        # Corresponds to spec.template
+        template:
+          metadata: # Metadata for the VirtualMachineInstance template
+            annotations:
+              vm.kubevirt.io/os: rhel9
+              vm.kubevirt.io/workload: server
+            labels:
+              kubevirt.io/domain: rhel-image-builder # Often used as the VMI domain name
+              kubevirt.io/size: small
+          spec: # Spec for the VirtualMachineInstance template
+            architecture: amd64
+            termination_grace_period_seconds: 180
+            domain: # KubeVirt domain spec (defines the virtual hardware)
+              machine:
+                type: pc-q35-rhel9.4.0
+              cpu:
+                cores: 4
+                sockets: 1
+                threads: 2
+              memory:
+                guest: 4Gi # Guest memory
+              devices:
+                rng: {} # Enable random number generator device
+                interfaces:
+                  - name: default
+                    model: virtio
+                    masquerade: {} # Use default pod networking with masquerade
+                    # macAddress: '02:c6:ad:00:00:0b' # Omit for a new MAC from kubemacpool or KubeVirt default.
+                    # Include if you need this specific MAC and are sure it won't conflict.
+                disks:
+                  - name: rootdisk # Name of the disk device
+                    disk: # Defines disk properties
+                      bus: virtio # Bus type
+                  - name: cloudinitdisk
+                    disk:
+                      bus: virtio
+              features:
+                acpi: {} # Enable ACPI features
+                smm:
+                  enabled: true # Enable System Management Mode
+              firmware:
+                bootloader: # KubeVirt v1.0+ bootloader structure
+                  efi: {} # Enable UEFI boot
+            networks: # Define virtual machine networks
+              - name: default # Name of the network
+                pod: {} # Connect to the default pod network
+            volumes: # Define volumes available to the VM
+              - name: rootdisk # Name of the volume
+                dataVolume: # Link this volume to a DataVolume
+                  name: rhel-image-builder # Must match the name in dataVolumeTemplates.metadata.name
+              - name: cloudinitdisk
+                cloudInitNoCloud: # Provide cloud-init configuration
+                  userData: |-
+                    #cloud-config
+                    user: ansible
+                    password: redhat
+                    ssh_pwauth: True
+                    chpasswd:
+                      expire: False
+                    sudo: "ALL=(ALL) NOPASSWD:ALL"
+                    ssh_authorized_keys:
+                      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7Pn+KoNWm0c8FBJLKT3p+esl1me4XXauehdJWirJ7iq2QoCT+ZzM98i+13CHVWujno4RDmVJ72Mt2e7bVC6T+CVuVioRoQ3OVEROw4eftvbo+kzAR29rEYig2bpyTtNzsVUdL7y1V2F4ASE5ClbtUTtRhKVjqe4vN4JKnV88rydVvkIQRnk4vBSlEcQS9toir1clHrCH29EA02GZZ7pf9vu4BCnCP+kx7dzd3EwSBPsbsC4p95YFDoDVJ65QA3AbtdAdBI9ApGpZnpiVubUQ9TjCQF453H0Ty0OAMIxcmTBBzKEt1SiUktYKbxqRDep/gonyhIbnN4O5FEvzv6avlBSoNHR1CKJBDjAALRPYZOyTjwYvW/pq68yazbiZychVZJESh6D3Om2UwKTeb1EcbHddEwVDOytz/yPaNmrSYCg9zgRA0SItXMHKYUNqN3LWn4coUVSSerm1Pw0llMwmKTgVkDNiEpmWtBBou1YUZ1VieTEiJIEs2hknbfbPt/k8= demos
 
     - name: Wait for virtual machine IP to be populated
       kubernetes.core.k8s_info:
