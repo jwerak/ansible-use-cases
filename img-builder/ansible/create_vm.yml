@@ -126,7 +126,7 @@
       kubernetes.core.k8s_info:
         api_version: kubevirt.io/v1
         kind: VirtualMachineInstance
-        name: fedora-httpd
+        name: rhel-image-builder
         namespace: workloads
       register: vmi
       retries: 60

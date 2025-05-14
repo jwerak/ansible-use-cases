@@ -11,13 +11,13 @@
           apiVersion: v1
           kind: Service
           metadata:
-            name: httpd-svc
+            name: cockpit-image-builder
             namespace: workloads
           spec:
             selector:
-              app: httpd
+              app: rhel-image-builder
             ports:
-              - name: httpd-port
+              - name: cockpit-port
                 protocol: TCP
                 port: 9090
                 targetPort: 9090
@@ -34,7 +34,7 @@
           spec:
             to:
               kind: Service
-              name: httpd-svc
+              name: cockpit-image-builder
               weight: 100
             port:
               targetPort: 9090
