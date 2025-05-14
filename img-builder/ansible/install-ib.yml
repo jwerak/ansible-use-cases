@@ -1,9 +1,25 @@
 ---
 - name: Install Image Builder
-  hosts: namespace_workloads
+  hosts: all
   become: true
   gather_facts: false
   tasks:
-    - name: Test Ping
-      ansible.builtin.debug:
-        msg: "Hello World!"
+    - name: Install and enable RHEL/Fedora Web Console (Cockpit) service
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.cockpit
+      vars:
+        cockpit_packages: "full"
+
+    - name: Install and enable RHEL/Fedora Image Builder service
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.image_builder
+      vars:
+        ib_packages: "full" # or "minimal" or "default"
+
+    - name: Configure Firewall for Web Console
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.firewall
+      vars:
+        firewall:
+          service: cockpit
+          state: enabled
