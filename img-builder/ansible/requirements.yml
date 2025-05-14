@@ -1,4 +1,5 @@
 collections:
-- name: redhat.openshift
-- name: redhat.openshift_virtualization
-- name: kubernetes.core
+  - name: redhat.openshift
+  - name: redhat.openshift_virtualization
+  - name: kubernetes.core
+  - name: linux-system-roles.image_builder

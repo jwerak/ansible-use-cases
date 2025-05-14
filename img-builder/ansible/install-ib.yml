@@ -12,7 +12,7 @@
 
     - name: Install and enable RHEL/Fedora Image Builder service
       ansible.builtin.include_role:
-        name: redhat.rhel_system_roles.image_builder
+        name: linux-system-roles.image_builder
       vars:
         ib_packages: "full" # or "minimal" or "default"
 

@@ -1,0 +1,41 @@
+---
+- name: Configure Network resources for Image Builder
+  hosts: localhost # Target all hosts in your inventory
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Create a httpd service
+      redhat.openshift.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: httpd-svc
+            namespace: workloads
+          spec:
+            selector:
+              app: httpd
+            ports:
+              - name: httpd-port
+                protocol: TCP
+                port: 80
+                targetPort: 9090
+
+    - name: Create a httpd route
+      redhat.openshift.k8s:
+        state: present
+        definition:
+          kind: Route
+          apiVersion: route.openshift.io/v1
+          metadata:
+            name: image-builder
+            namespace: workloads
+          spec:
+            to:
+              kind: Service
+              name: httpd-svc
+              weight: 100
+            port:
+              targetPort: 80
+            wildcardPolicy: None
