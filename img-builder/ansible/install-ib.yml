@@ -1,0 +1,9 @@
+---
+- name: Install Image Builder
+  hosts: namespace_workloads
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Test Ping
+      ansible.builtin.debug:
+        msg: "Hello World!"
