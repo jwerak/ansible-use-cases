@@ -39,6 +39,8 @@
                   user: ansible
                   password: redhat
                   ssh_pwauth: True
+                  chpasswd:
+                    expire: False
                   sudo: "ALL=(ALL) NOPASSWD:ALL"
                   ssh_authorized_keys:
                     - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7Pn+KoNWm0c8FBJLKT3p+esl1me4XXauehdJWirJ7iq2QoCT+ZzM98i+13CHVWujno4RDmVJ72Mt2e7bVC6T+CVuVioRoQ3OVEROw4eftvbo+kzAR29rEYig2bpyTtNzsVUdL7y1V2F4ASE5ClbtUTtRhKVjqe4vN4JKnV88rydVvkIQRnk4vBSlEcQS9toir1clHrCH29EA02GZZ7pf9vu4BCnCP+kx7dzd3EwSBPsbsC4p95YFDoDVJ65QA3AbtdAdBI9ApGpZnpiVubUQ9TjCQF453H0Ty0OAMIxcmTBBzKEt1SiUktYKbxqRDep/gonyhIbnN4O5FEvzv6avlBSoNHR1CKJBDjAALRPYZOyTjwYvW/pq68yazbiZychVZJESh6D3Om2UwKTeb1EcbHddEwVDOytz/yPaNmrSYCg9zgRA0SItXMHKYUNqN3LWn4coUVSSerm1Pw0llMwmKTgVkDNiEpmWtBBou1YUZ1VieTEiJIEs2hknbfbPt/k8= demos
