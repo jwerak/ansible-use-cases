@@ -1,0 +1,13 @@
+---
+ansible-navigator:
+  execution-environment:
+    image: quay.io/jveverka/ansible-official-ee-aap
+    pull:
+      policy: missing
+  logging:
+    file: /tmp/log.txt
+    # level: critical
+  playbook-artifact:
+    enable: true
+    replay: /tmp/test_artifact.json
+    save-as: /tmp/test_artifact.json

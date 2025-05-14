@@ -1,0 +1,17 @@
+---
+- name: Configure AAP
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  vars_files:
+    - ./secrets/aap.yml
+  vars:
+    controller_inventories:
+      - name: OCP Virt local
+        organization: Test
+        description: created by Ansible Playbook - for local OCP cluster
+  tasks:
+    - name: Configure Inventory
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_inventories
