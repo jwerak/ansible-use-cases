@@ -38,7 +38,7 @@
                   #cloud-config
                   users:
                     - name: ansible
-                      passwd: $6$A0/D2f9PmlaRkT8X$Y.N.ZkQSPA05ppBwnDDNs0UR1Rw/OmLyuKmHhHj9CCrdeY41bAMdBKRqJLEoONuIZB33CxQ8Ck3RVyqt9T6jE0
+                      plain_text_passwd: redhat
                       groups:
                         - wheel
                       ssh_authorized_keys:
