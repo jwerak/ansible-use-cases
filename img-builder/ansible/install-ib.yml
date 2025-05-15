@@ -3,11 +3,15 @@
   hosts: all
   become: true
   gather_facts: false
+  vars:
+    rhc_auth:
+      activation_keys:
+        keys: ["{{ activationkey }}"]
+    rhc_organization: "{{ org_id }}"
   tasks:
     - name: Register System
-      ansible.builtin.redhat_subscription:
-        org_id: "{{ org_id }}"
-        activationkey: "{{ activationkey }}"
+      ansible.builtin.include_role:
+        name: redhat.rhel_system_roles.rhc
 
     - name: Install and enable RHEL/Fedora Web Console (Cockpit) service
       ansible.builtin.include_role:
