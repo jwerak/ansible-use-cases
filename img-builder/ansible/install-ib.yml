@@ -9,6 +9,11 @@
         keys: ["{{ activationkey }}"]
     rhc_organization: "{{ org_id }}"
   tasks:
+    - name: Wait for SSH to become available after reboot
+      ansible.builtin.wait_for_connection:
+        delay: 30
+        timeout: 600
+
     - name: Register System
       ansible.builtin.include_role:
         name: redhat.rhel_system_roles.rhc
