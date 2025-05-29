@@ -2,7 +2,7 @@
 
 Various Ansible use cases in single repo.
 
-## K8s Filtering
+## RHEL Image Builder automation
 
 [img-builder](./img-builder/README.md)
 

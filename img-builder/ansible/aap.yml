@@ -5,13 +5,27 @@
   gather_facts: false
   become: false
   vars_files:
-    - ./secrets/aap.yml
+    - ./secrets/aap_secrets.yml
   vars:
+    aap_hostname: dd
+    aap_token:
+    controller_credentials:
+      - name: ahub-published
+        credential_type: Galaxy/Automation Hub
+        inputs:
+          url: https://console.redhat.com/api/automation-hub/content/published/
+          auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+          token: "{{ automation_hub_token }}"
     controller_inventories:
       - name: OCP Virt local
-        organization: Test
+        organization: Default
         description: created by Ansible Playbook - for local OCP cluster
+
   tasks:
+    - name: Configure Credentials
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_credentials
+
     - name: Configure Inventory
       ansible.builtin.import_role:
         name: infra.aap_configuration.controller_inventories

@@ -17,6 +17,10 @@ Quick use case:
 
 ### Deploy AAP
 
+Install AAP Operator via GUI.
+
+Install AAP instance:
+
 ```yaml
 apiVersion: aap.ansible.com/v1alpha1
 kind: AnsibleAutomationPlatform
@@ -35,11 +39,22 @@ spec:
   ingress_type: Route
 ```
 
-### Configure AAP
+### Configure AAP - automated
+
+- Copy file ./secrets/aap_secrets.yml.example -> ./secrets/aap_secrets.yml
+- Update values
+  - `automation_hub_token` from [automation-hub](https://console.redhat.com/ansible/automation-hub/token)
+  - `aap_hostname`: ${AAP-URL}
+  - `aap_token` from ${AAP}-URL/access/users/
+
+### Configure AAP - manually
 
 #### Credentials
 
-**Obtain Hub Credentials**: Login to Ansible automation hub at https://console.redhat.com/ansible/automation-hub. Navigate to "Automation Hub" -> "Connect to Hub" and click "Load Token" under "Offline Token" to generate a token. Copy down the token, server URL, and SSO URL.
+**Obtain Hub Credentials**: Login to Ansible automation hub at https://console.redhat.com/ansible/automation-hub/token. Navigate to "Automation Hub" -> "Connect to Hub" and click "Load Token" under "Offline Token" to generate a token. Copy down the token, server URL, and SSO URL.
+
+**AAP Subscription Manifest**: Go to [subscription allocations](https://access.redhat.com/management/subscription_allocations) and export zip manifest.
+Import manifest to AAP.
 
 **Add Credentials**: In the Ansible Automation Platform web console, navigate to "Resources" -> "Credentials" and click "Add." Select "Ansible Galaxy/Automation Hub API Token" as the "Credentials Type". Enter the previously obtained token, server URL, and SSO URL.
 
