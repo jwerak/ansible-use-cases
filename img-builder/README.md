@@ -44,14 +44,19 @@ spec:
 - Copy file ./secrets/aap_secrets.yml.example -> ./secrets/aap_secrets.yml
 - Update values
   - `automation_hub_token` from [automation-hub](https://console.redhat.com/ansible/automation-hub/token)
-  - `aap_hostname`: ${AAP-URL}
+  - `aap_hostname`: ${AAP-URL} (not aap controller)
   - `aap_token` from ${AAP}-URL/access/users/
+- Optional: test connection to controller
+
+        curl -H "Authorization: Bearer TOKEN" https://inra-aap-aap.apps.cluster-2kxf6.dynamic.redhatworkshops.io/api/controller/v2/organizations/
+
+
 
 ### Configure AAP - manually
 
 #### Credentials
 
-**Obtain Hub Credentials**: Login to Ansible automation hub at https://console.redhat.com/ansible/automation-hub/token. Navigate to "Automation Hub" -> "Connect to Hub" and click "Load Token" under "Offline Token" to generate a token. Copy down the token, server URL, and SSO URL.
+**Obtain Hub Credentials**: Login to Ansible automation hub at <https://console.redhat.com/ansible/automation-hub/token>. Navigate to "Automation Hub" -> "Connect to Hub" and click "Load Token" under "Offline Token" to generate a token. Copy down the token, server URL, and SSO URL.
 
 **AAP Subscription Manifest**: Go to [subscription allocations](https://access.redhat.com/management/subscription_allocations) and export zip manifest.
 Import manifest to AAP.
@@ -89,7 +94,6 @@ env:
 #### Workloads
 
 Create the Ansible Automation Platform **Project** from this repository.
-
 
 ## Demo flow
 
