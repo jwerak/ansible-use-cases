@@ -1,0 +1,69 @@
+---
+- name: Configure AAP
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  vars_files:
+    - ./secrets/aap_secrets.yml
+  vars:
+    controller_credentials:
+      - name: ahub-validated
+        credential_type: "Ansible Galaxy/Automation Hub API Token"
+        organization: Default
+        inputs:
+          url: https://console.redhat.com/api/automation-hub/content/validated/
+          auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+          token: "{{ automation_hub_token }}"
+      - name: ahub-published
+        credential_type: "Ansible Galaxy/Automation Hub API Token"
+        organization: Default
+        inputs:
+          url: https://console.redhat.com/api/automation-hub/content/published/
+          auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+          token: "{{ automation_hub_token }}"
+    aap_organizations:
+      - name: Image Builder
+        description: Image Builder
+        galaxy_credentials:
+          - ahub-validated
+          - ahub-published
+          - Ansible Galaxy
+    controller_inventories:
+      - name: OCP Virt local
+        organization: Default
+        description: created by Ansible Playbook - for local OCP cluster
+
+  tasks:
+    - name: Configure Credentials
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_credentials
+
+    - name: Configure Organizations
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.gateway_organizations
+
+    - name: Configure Inventory
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_inventories
+
+- name: Setup AAP Project and Templates
+  hosts: localhost
+  connection: local
+  become: false
+  vars_files:
+    - ./secrets/aap_secrets.yml
+  gather_facts: false
+  vars:
+    aap_demo_organization_name: Image Builder
+    controller_credentials:
+      - name: ansible-ssh
+        credential_type: "Machine"
+        organization: "{{ aap_demo_organization_name }}"
+        inputs:
+          username: ansible
+          ssh_key_data: "{{ demo_ssh_private_key }}"
+  tasks:
+    - name: Configure Credentials
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_credentials

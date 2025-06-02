@@ -12,6 +12,9 @@ Quick use case:
 
 - OCP with Virtualization enabled
 - AAP Operator installed
+- **Obtain Hub Credentials**: Login to Ansible automation hub at <https://console.redhat.com/ansible/automation-hub/token>. Navigate to "Automation Hub" -> "Connect to Hub" and click "Load Token" under "Offline Token" to generate a token. Copy down the token, server URL, and SSO URL.
+- **AAP Subscription Manifest**: Go to [subscription allocations](https://access.redhat.com/management/subscription_allocations) and export zip manifest.
+Import manifest to AAP.
 
 ## Setup
 
@@ -50,26 +53,22 @@ spec:
 
         curl -H "Authorization: Bearer TOKEN" https://inra-aap-aap.apps.cluster-2kxf6.dynamic.redhatworkshops.io/api/controller/v2/organizations/
 
-
+- Run setup playbook
+  - `ansible-navigator run setup.yml`
 
 ### Configure AAP - manually
 
 #### Credentials
 
-**Obtain Hub Credentials**: Login to Ansible automation hub at <https://console.redhat.com/ansible/automation-hub/token>. Navigate to "Automation Hub" -> "Connect to Hub" and click "Load Token" under "Offline Token" to generate a token. Copy down the token, server URL, and SSO URL.
-
-**AAP Subscription Manifest**: Go to [subscription allocations](https://access.redhat.com/management/subscription_allocations) and export zip manifest.
-Import manifest to AAP.
-
 **Add Credentials**: In the Ansible Automation Platform web console, navigate to "Resources" -> "Credentials" and click "Add." Select "Ansible Galaxy/Automation Hub API Token" as the "Credentials Type". Enter the previously obtained token, server URL, and SSO URL.
 
-**Update Organization Settings**: Navigate to "Access" -> "Organizations," select your organization, click "Edit," and go to "Galaxy Credentials." Click the "Search" icon, select the newly created Ansible automation hub credential, and move it to the top of the list to prioritize its use.
+**Update Organization Settings**: Navigate to "Access Management" -> "Organizations," select your organization, click "Edit," and go to "Galaxy Credentials." Click the "Search" icon, select the newly created Ansible automation hub credential, and move it to the top of the list to prioritize its use.
 
 **SSH key** Credential.
 
 Create secret for the **remote OpenShift cluster**.
 
-Create Custom **Credentials for KubeVirt Inventory**:
+Create Custom **Credentials for KubeVirt Inventory** (old):
 
 ```yaml
 ---
@@ -109,3 +108,5 @@ Create the Ansible Automation Platform **Project** from this repository.
 ## Reference
 
 - [AAP & OCP Virtualization blog](https://www.redhat.com/en/blog/ansible-automation-platform-openshift-virtualization-multi-cluster-environment)
+- [automation controller roles](https://github.com/redhat-cop/infra.aap_configuration)
+  - [automation-hub link](https://console.redhat.com/ansible/automation-hub/repo/validated/infra/aap_configuration/)
