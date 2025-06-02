@@ -68,6 +68,8 @@ spec:
 
 Create secret for the **remote OpenShift cluster**.
 
+Add Execution Environment `quay.io/jveverka/ansible-official-ee-aap`.
+
 Create Custom **Credentials for KubeVirt Inventory** (old):
 
 ```yaml

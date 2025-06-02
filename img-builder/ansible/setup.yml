@@ -58,12 +58,48 @@
     aap_demo_organization_name: Image Builder
     controller_credentials:
       - name: ansible-ssh
-        credential_type: "Machine"
+        credential_type: Machine
         organization: "{{ aap_demo_organization_name }}"
         inputs:
           username: ansible
           ssh_key_data: "{{ demo_ssh_private_key }}"
+      - name: openshift-local
+        credential_type: OpenShift or Kubernetes API Bearer Token
+        organization: "{{ aap_demo_organization_name }}"
+        inputs:
+          host: "{{ ocp_host }}"
+          bearer_token: "{{ ocp_bearer_token }}"
+    controller_execution_environments:
+      - name: "official-ee"
+        image: quay.io/jveverka/ansible-official-ee-aap
+    controller_inventories:
+      - name: OCP-Virt-local
+        organization: "{{ aap_demo_organization_name }}"
+        description: OCP Virt - Created by Ansible Playbook
+    controller_inventory_sources:
+      - name: ocp-virt-local
+        organization: "{{ aap_demo_organization_name }}"
+        source: openshift_virtualization
+        inventory: OCP-Virt-local
+        description: Inventory sourced from a OCP Virt of local cluster
+        overwrite: true
+        update_on_launch: true
+        credential: openshift-local
+        execution_environment: official-ee
+
   tasks:
     - name: Configure Credentials
       ansible.builtin.import_role:
         name: infra.aap_configuration.controller_credentials
+
+    - name: Configure Execution Environments
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_execution_environments
+
+    - name: Configure Inventories
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_inventories
+
+    - name: Configure Inventory sources
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_inventory_sources
