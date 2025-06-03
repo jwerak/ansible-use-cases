@@ -107,6 +107,12 @@ Create the Ansible Automation Platform **Project** from this repository.
 
 ### Configure AAP environment
 
+## TODO
+
+- automate OCP Service account creation
+- automate AAP subscription and instance creation
+- update flow to create project and secrets, and create setup JobTemplate to set everything up
+
 ## Reference
 
 - [AAP & OCP Virtualization blog](https://www.redhat.com/en/blog/ansible-automation-platform-openshift-virtualization-multi-cluster-environment)

@@ -86,6 +86,15 @@
         update_on_launch: true
         credential: openshift-local
         execution_environment: official-ee
+    controller_projects:
+      - name: Image Builder
+        organization: "{{ aap_demo_organization_name }}"
+        scm_branch: master
+        scm_clean: "no"
+        scm_delete_on_update: "no"
+        scm_type: git
+        scm_update_on_launch: "no"
+        scm_url: https://github.com/jwerak/ansible-use-cases.git
 
   tasks:
     - name: Configure Credentials
@@ -103,3 +112,7 @@
     - name: Configure Inventory sources
       ansible.builtin.import_role:
         name: infra.aap_configuration.controller_inventory_sources
+
+    - name: Configure Projects
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_projects
