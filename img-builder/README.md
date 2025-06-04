@@ -70,27 +70,10 @@ Create secret for the **remote OpenShift cluster**.
 
 Add Execution Environment `quay.io/jveverka/ansible-official-ee-aap`.
 
-Create Custom **Credentials for KubeVirt Inventory** (old):
+Create **Credentials for KubeVirt Inventory**.
 
-```yaml
----
-fields:
-  - type: string
-    id: kube_api
-    label: Kubernetes API Endpoint
-  - type: string
-    id: kube_token
-    label: Kubernetes API Token
-    secret: true
-required:
-  - kube_api
-  - kube_token
-
----
-env:
-  K8S_AUTH_HOST: "{{ kube_api }}"
-  K8S_AUTH_API_KEY: "{{ kube_token }}"
-```
+Add credentials for `activationkey` and `org_id` to be available during job `install-ib.yml`.
+Both should be available from [console.redhat.com](https://console.redhat.com/insights/connector/activation-keys#SIDs=&tags=).
 
 #### Workloads
 
@@ -112,6 +95,7 @@ Create the Ansible Automation Platform **Project** from this repository.
 - automate OCP Service account creation
 - automate AAP subscription and instance creation
 - update flow to create project and secrets, and create setup JobTemplate to set everything up
+- add RHEL activation key and org via secret
 
 ## Reference
 
