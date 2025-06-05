@@ -6,7 +6,6 @@ ansible-navigator:
       policy: missing
   logging:
     file: /tmp/log.txt
-    # level: critical
   playbook-artifact:
     enable: true
     replay: /tmp/test_artifact.json

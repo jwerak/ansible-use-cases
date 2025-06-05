@@ -56,6 +56,31 @@
   gather_facts: false
   vars:
     aap_demo_organization_name: Image Builder
+    controller_credential_types:
+      - name: "RHEL Subscription"
+        description: !unsafe ""
+        kind: "cloud"
+        inputs:
+          fields:
+            - id: org_id
+              type: string
+              label: Organization id
+            - id: activation_key
+              type: string
+              label: Kubernetes API Token
+              secret: true
+          required:
+            - org_id
+            - activation_key
+
+        injectors:
+          extra_vars:
+            rhc_auth:
+              login: none
+              activation_keys:
+                keys:
+                  - !unsafe "{{ activation_key }}"
+            rhc_organization: !unsafe "{{ org_id }}"
     controller_credentials:
       - name: ansible-ssh
         credential_type: Machine
@@ -69,6 +94,13 @@
         inputs:
           host: "{{ ocp_host }}"
           bearer_token: "{{ ocp_bearer_token }}"
+      - name: "RH subscription"
+        description: !unsafe ""
+        credential_type: "RHEL Subscription"
+        organization: "{{ aap_demo_organization_name }}"
+        inputs:
+          org_id: "{{ rh_org_id }}"
+          activation_key: "{{ rh_activation_key }}"
     controller_execution_environments:
       - name: "official-ee"
         image: quay.io/jveverka/ansible-official-ee-aap
@@ -90,13 +122,191 @@
       - name: Image Builder
         organization: "{{ aap_demo_organization_name }}"
         scm_branch: master
-        scm_clean: "no"
-        scm_delete_on_update: "no"
+        scm_clean: false
+        scm_delete_on_update: false
         scm_type: git
-        scm_update_on_launch: "no"
+        scm_update_on_launch: false
         scm_url: https://github.com/jwerak/ansible-use-cases.git
+    controller_templates:
+      - name: "Image Builder - Create VM"
+        description: !unsafe ""
+        organization: "Image Builder"
+        project: "Image Builder"
+        inventory: "OCP-Virt-local"
+        playbook: "img-builder/ansible/playbooks/create_vm.yml"
+        scm_branch: ""
+        forks: 0
+        limit: ""
+        verbosity: 0
+        job_type: "run"
+        job_slice_count: 1
+        use_fact_cache: false
+        credentials:
+          - "openshift-local"
+        allow_simultaneous: false
+        ask_scm_branch_on_launch: false
+        ask_diff_mode_on_launch: false
+        ask_tags_on_launch: false
+        ask_skip_tags_on_launch: false
+        ask_job_type_on_launch: false
+        ask_verbosity_on_launch: false
+        ask_variables_on_launch: false
+        ask_inventory_on_launch: false
+        ask_limit_on_launch: false
+        ask_credential_on_launch: false
+        ask_execution_environment_on_launch: false
+        ask_labels_on_launch: false
+        ask_forks_on_launch: false
+        ask_job_slice_count_on_launch: false
+        ask_timeout_on_launch: false
+        ask_instance_groups_on_launch: false
+        extra_vars: ""
+        job_tags: ""
+        force_handlers: false
+        skip_tags: ""
+        start_at_task: ""
+        timeout: 0
+        execution_environment: "official-ee"
+        host_config_key: ""
+        survey_enabled: false
+        become_enabled: false
+        diff_mode: false
+        webhook_service: ""
+        prevent_instance_group_fallback: false
+      - name: "Image Builder - Setup"
+        description: !unsafe ""
+        organization: "Image Builder"
+        project: "Image Builder"
+        inventory: "OCP-Virt-local"
+        playbook: "img-builder/ansible/playbooks/install-ib.yml"
+        scm_branch: ""
+        forks: 0
+        limit: "workloads-*"
+        verbosity: 0
+        job_type: "run"
+        job_slice_count: 1
+        use_fact_cache: false
+        credentials:
+          - "ansible-ssh"
+          - "RH subscription"
+        allow_simultaneous: false
+        ask_scm_branch_on_launch: false
+        ask_diff_mode_on_launch: false
+        ask_tags_on_launch: false
+        ask_skip_tags_on_launch: false
+        ask_job_type_on_launch: false
+        ask_verbosity_on_launch: false
+        ask_variables_on_launch: false
+        ask_inventory_on_launch: false
+        ask_limit_on_launch: false
+        ask_credential_on_launch: false
+        ask_execution_environment_on_launch: false
+        ask_labels_on_launch: false
+        ask_forks_on_launch: false
+        ask_job_slice_count_on_launch: false
+        ask_timeout_on_launch: false
+        ask_instance_groups_on_launch: false
+        extra_vars:
+          __ib_packages_exclude: ""
+        job_tags: ""
+        force_handlers: false
+        skip_tags: ""
+        start_at_task: ""
+        timeout: 0
+        execution_environment: "Default execution environment"
+        host_config_key: ""
+        survey_enabled: false
+        become_enabled: false
+        diff_mode: false
+        webhook_service: ""
+        prevent_instance_group_fallback: false
+      - name: "Image Builder - Expose"
+        description: !unsafe ""
+        organization: "Image Builder"
+        project: "Image Builder"
+        inventory: "OCP-Virt-local"
+        playbook: "img-builder/ansible/playbooks/create_network_resources.yml"
+        scm_branch: ""
+        forks: 0
+        limit: ""
+        verbosity: 0
+        job_type: "run"
+        job_slice_count: 1
+        use_fact_cache: false
+        credentials:
+          - "openshift-local"
+        allow_simultaneous: false
+        ask_scm_branch_on_launch: false
+        ask_diff_mode_on_launch: false
+        ask_tags_on_launch: false
+        ask_skip_tags_on_launch: false
+        ask_job_type_on_launch: false
+        ask_verbosity_on_launch: false
+        ask_variables_on_launch: false
+        ask_inventory_on_launch: false
+        ask_limit_on_launch: false
+        ask_credential_on_launch: false
+        ask_execution_environment_on_launch: false
+        ask_labels_on_launch: false
+        ask_forks_on_launch: false
+        ask_job_slice_count_on_launch: false
+        ask_timeout_on_launch: false
+        ask_instance_groups_on_launch: false
+        extra_vars: ""
+        job_tags: ""
+        force_handlers: false
+        skip_tags: ""
+        start_at_task: ""
+        timeout: 0
+        execution_environment: "official-ee"
+        host_config_key: ""
+        survey_enabled: false
+        become_enabled: false
+        diff_mode: false
+        webhook_service: ""
+        prevent_instance_group_fallback: false
+    controller_workflows:
+      - name: "Image Builder - Full Deploy"
+        description: !unsafe ""
+        organization: "Image Builder"
+        simplified_workflow_nodes:
+          - identifier: "1e44641b-8d99-428c-9959-943ed81ac0d1"
+            workflow_job_template: "Image Builder - Full Deploy"
+            unified_job_template: "Image Builder - Create VM"
+            limit: ""
+            organization: "Image Builder"
+            all_parents_must_converge: "False"
+            success_nodes:
+              - "70f91e9a-77b3-480f-bc89-0f36e7ad634a"
+          - identifier: "73b7a690-a611-424f-8962-eb918945d3d2"
+            workflow_job_template: "Image Builder - Full Deploy"
+            unified_job_template: "Image Builder - Expose"
+            limit: ""
+            organization: "Image Builder"
+            all_parents_must_converge: "False"
+          - identifier: "70f91e9a-77b3-480f-bc89-0f36e7ad634a"
+            workflow_job_template: "Image Builder - Full Deploy"
+            unified_job_template: "Image Builder - Setup"
+            limit: ""
+            organization: "Image Builder"
+            all_parents_must_converge: "False"
+            success_nodes:
+              - "73b7a690-a611-424f-8962-eb918945d3d2"
+        ask_variables_on_launch: "False"
+        allow_simultaneous: "False"
+        scm_branch: ""
+        limit: ""
+        ask_limit_on_launch: false
+        ask_inventory_on_launch: false
+        webhook_service: ""
+        extra_vars: ""
+        survey_enabled: false
 
   tasks:
+    - name: Configure Credential Types
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_credential_types
+
     - name: Configure Credentials
       ansible.builtin.import_role:
         name: infra.aap_configuration.controller_credentials
@@ -116,3 +326,11 @@
     - name: Configure Projects
       ansible.builtin.import_role:
         name: infra.aap_configuration.controller_projects
+
+    - name: Configure Job Templates
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_job_templates
+
+    - name: Configure Job Template Workflows
+      ansible.builtin.import_role:
+        name: infra.aap_configuration.controller_workflow_job_templates

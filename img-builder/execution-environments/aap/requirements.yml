@@ -5,5 +5,6 @@ collections:
   - name: ansible.controller
   - name: ansible.eda
   - name: infra.aap_configuration
+  - name: infra.aap_configuration_extended
   - name: redhat.openshift_virtualization
     version: ">=2.1.0"
